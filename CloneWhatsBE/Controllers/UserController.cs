@@ -1,3 +1,4 @@
+using CloneWhatsBE.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloneWhatsBE.Controllers
@@ -18,6 +19,32 @@ namespace CloneWhatsBE.Controllers
         public IActionResult GetAllUsers()
         {
             return Ok(UserFakeDb.Users);
+        }
+
+        [HttpPut("{userId:guid}/image")]
+        public async Task<IActionResult> UpdateImage(Guid userId, [FromForm] IFormFile file)
+        {
+            var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+
+            var userImage = UserFakeDb.UserImages.FirstOrDefault(userImage => userImage.UserId == userId);
+
+            if (userImage is null)
+                UserFakeDb.UserImages
+                    .Add(new UserImage(userId, memoryStream.ToArray()));
+            else
+                userImage.UpdateImage(memoryStream.ToArray());
+
+            return Ok();
+        }
+
+        [HttpGet("{userId:guid}/image")]
+        [ProducesResponseType<UserImage>(StatusCodes.Status200OK)]
+        public IActionResult GetUserImage(Guid userId)
+        {
+            var userImage = UserFakeDb.UserImages.FirstOrDefault(userImage => userImage.UserId == userId);
+
+            return userImage == null ? NotFound() : File(userImage.Image, "image/png");
         }
     }
 }

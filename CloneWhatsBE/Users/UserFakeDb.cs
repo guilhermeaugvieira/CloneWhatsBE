@@ -1,4 +1,4 @@
-﻿namespace CloneWhatsBE;
+﻿namespace CloneWhatsBE.Users;
 
 public static class UserFakeDb
 {
@@ -7,4 +7,6 @@ public static class UserFakeDb
         new User(new Guid("176822EC-138D-46E0-AA29-F5EB772E476D"), "Albus Dumbledore"),
         new User(new Guid("8036918B-35B2-44EE-A0A7-81E5D3898CDE"), "Lord Valdemort")
     ];
+
+    public static readonly List<UserImage> UserImages = [];
 }
