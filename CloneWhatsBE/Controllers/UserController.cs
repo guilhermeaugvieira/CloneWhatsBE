@@ -22,6 +22,7 @@ namespace CloneWhatsBE.Controllers
         }
 
         [HttpPut("{userId:guid}/image")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateImage(Guid userId, [FromForm] IFormFile file)
         {
             var memoryStream = new MemoryStream();
@@ -39,7 +40,8 @@ namespace CloneWhatsBE.Controllers
         }
 
         [HttpGet("{userId:guid}/image")]
-        [ProducesResponseType<UserImage>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IFormFile>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetUserImage(Guid userId)
         {
             var userImage = UserFakeDb.UserImages.FirstOrDefault(userImage => userImage.UserId == userId);
