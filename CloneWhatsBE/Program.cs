@@ -1,9 +1,4 @@
-using CloneWhatsBE.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.Net.Sockets;
-using System.Text;
+using CloneWhatsBE.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,31 +20,9 @@ builder.Services.AddCors(options =>
     })
 );
 
-// Add Jwt Settings Globally
-builder.Services.Configure<JwtSettingsOptions>(builder.Configuration.GetRequiredSection(JwtSettingsOptions.SectionName));
-builder.Services.AddSingleton(provider => provider.GetRequiredService<IOptions<JwtSettingsOptions>>().Value);
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    var jwtSettingsOptionsSection = builder.Configuration.GetRequiredSection(JwtSettingsOptions.SectionName);
-    var jwtSettingsOptions = jwtSettingsOptionsSection.Get<JwtSettingsOptions>();
-    
-    var secretByte = Encoding.UTF8.GetBytes(jwtSettingsOptions.Secret);
-    var secretKey = new SymmetricSecurityKey(secretByte);
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = secretKey,
-        ValidateLifetime = false,
-        ValidateIssuer = false,
-        ValidateAudience = false,
-    };
-});
+builder.Services
+    .AddDependencyInjectionConfiguration(builder.Configuration)
+    .AddJwtConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
