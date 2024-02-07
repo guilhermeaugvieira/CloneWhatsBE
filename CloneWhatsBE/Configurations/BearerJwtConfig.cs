@@ -29,6 +29,17 @@ public static class BearerJwtConfig
                 ValidateIssuer = false,
                 ValidateAudience = false,
             };
+
+            options.Events = new JwtBearerEvents()
+            {
+                OnMessageReceived = context =>
+                {
+                    var token = context.Request.Query["access_token"];
+                    context.Token ??= token;
+
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         return services;
